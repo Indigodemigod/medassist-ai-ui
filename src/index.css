@@ -1,0 +1,38 @@
+:root{
+  --radius: 14px;
+  --glass-bg: rgba(255,255,255,0.55);
+  --glass-border: rgba(255,255,255,0.25);
+  --soft-blue-1: #e6f3ff;
+  --soft-blue-2: #d6ecff;
+}
+
+html,body,#root{
+  height:100%;
+  margin:0;
+  font-family: Inter, Roboto, 'Helvetica Neue', Arial;
+}
+
+body{
+  background: linear-gradient(135deg, #f4fbff 0%, #e6f7ff 50%, #eaf7ff 100%);
+  -webkit-font-smoothing:antialiased;
+}
+
+.app-shell{
+  min-height:100vh;
+  display:flex;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(16,24,40,0.08);
+  border: 1px solid var(--glass-border);
+}
+
+.fade-in{animation:fadeIn .45s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* small responsive helpers */
+@media (max-width:900px){
+  .hide-sm{display:none}
+}
