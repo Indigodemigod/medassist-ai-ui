@@ -5,22 +5,51 @@ import GlassCard from '../components/Cards/GlassCard'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital'
 import SmartToyIcon from '@mui/icons-material/SmartToy'
-import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import { getUserSummary } from '../api/userApi'
+
 
 export default function Dashboard() {
+  const [summary, setSummary] = React.useState(null)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    getUserSummary()
+      .then((res) => {
+        setSummary(res.data)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('Failed to fetch summary:', err)
+        setLoading(false)
+      })
+  }, [])
+
   const stats = [
-    { title: 'Total Prescriptions', value: '1,248', icon: <InsertDriveFileIcon /> },
-    { title: 'Total Medicines', value: '3,842', icon: <LocalHospitalIcon /> },
-    { title: 'AI Queries', value: '9,321', icon: <SmartToyIcon /> },
-    { title: 'Risk Alerts', value: '24', icon: <WarningAmberIcon /> }
+    {
+      title: 'Total Prescriptions',
+      value: summary?.total_prescriptions || 0,
+      icon: <InsertDriveFileIcon />
+    },
+    {
+      title: 'Total Medicines',
+      value: summary?.total_medicines || 0,
+      icon: <LocalHospitalIcon />
+    },
+    {
+      title: 'AI Queries',
+      value: summary?.total_questions || 0,
+      icon: <SmartToyIcon />
+    }
   ]
+
 
   return (
     <Box>
       <GlassCard sx={{ p: 3 }}>
-        <Typography variant="h4">Good afternoon — Dr. Smith</Typography>
+        <Typography variant="h4">Welcome back — {summary?.full_name || 'User'}</Typography>
         <Typography color="text.secondary">Here's the latest from MediAssist AI</Typography>
       </GlassCard>
+
 
       <Grid container spacing={2} sx={{ mt: 2 }}>
         {stats.map((s) => (
@@ -41,23 +70,18 @@ export default function Dashboard() {
                 <TableCell>Time</TableCell>
                 <TableCell>Action</TableCell>
                 <TableCell>User</TableCell>
-                <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell>2m ago</TableCell>
-                <TableCell>Uploaded prescription.pdf</TableCell>
-                <TableCell>John Doe</TableCell>
-                <TableCell>Processed</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>10m ago</TableCell>
-                <TableCell>AI query: drug interactions</TableCell>
-                <TableCell>Dr. Smith</TableCell>
-                <TableCell>Completed</TableCell>
-              </TableRow>
+              {summary?.last_prescription_name && (
+                <TableRow>
+                  <TableCell>{new Date(summary.last_prescription_upload_time).toLocaleString()}</TableCell>
+                  <TableCell>Uploaded {summary.last_prescription_name}</TableCell>
+                  <TableCell>{summary.full_name}</TableCell>
+                </TableRow>
+              )}
             </TableBody>
+
           </Table>
         </TableContainer>
       </Box>
